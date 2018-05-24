@@ -550,7 +550,7 @@ s3_list_versions(a...) = s3_list_versions(default_aws_config(), a...)
 
 
 import Base.ismatch
-ismatch(pattern::AbstractString, s::AbstractString) = ismatch(Regex(pattern), s)
+ismatchMSR(pattern::AbstractString, s::AbstractString) = ismatch(Regex(pattern), s)
 
 
 """

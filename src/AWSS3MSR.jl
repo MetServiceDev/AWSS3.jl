@@ -10,7 +10,7 @@
 __precompile__()
 
 
-module AWSS3
+module AWSS3MSR
 
 export s3_arn, s3_put, s3_get, s3_get_file, s3_exists, s3_delete, s3_copy,
        s3_create_bucket,
@@ -26,7 +26,7 @@ import HttpCommon: Response
 import Requests: mimetype
 import DataStructures: OrderedDict
 
-using AWSCore
+using AWSCoreMSR
 using SymDict
 using Retry
 using XMLDict
@@ -69,7 +69,7 @@ function s3(aws::AWSConfig,
     query_str = format_query_str(query)
 
     # Build URL...
-    resource = string("/", AWSCore.escape_path(path),
+    resource = string("/", AWSCoreMSR.escape_path(path),
                       query_str == "" ? "" : "?$query_str")
     url = string(aws_endpoint("s3", "", bucket), resource)
 
@@ -88,15 +88,15 @@ function s3(aws::AWSConfig,
 
         # Check bucket region cache...
         try request[:region] = aws[:bucket_region][bucket] end
-        return AWSCore.do_request(request)
+        return AWSCoreMSR.do_request(request)
 
     catch e
 
         # Update bucket region cache if needed...
-        @retry if typeof(e) == AWSCore.AuthorizationHeaderMalformed &&
+        @retry if typeof(e) == AWSCoreMSR.AuthorizationHeaderMalformed &&
                   haskey(e.info, "Region")
 
-            if AWSCore.debug_level > 0
+            if AWSCoreMSR.debug_level > 0
                 println("S3 region redirect $bucket -> $(e.info["Region"])")
             end
             if !haskey(aws, :bucket_region)
